@@ -1,0 +1,4 @@
+.low-stock {
+  color: var(--danger-color);
+  font-weight: 600;
+}

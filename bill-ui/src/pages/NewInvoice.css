@@ -1,0 +1,73 @@
+.new-invoice {
+  max-width: 1200px;
+}
+
+.invoice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-section {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-section h2 {
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  font-size: 18px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.items-table th {
+  background-color: var(--light-bg);
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.items-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.items-table tr:hover {
+  background-color: var(--light-bg);
+}
+
+.invoice-summary {
+  background-color: #f0f4ff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.summary-box {
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.summary-row.total {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  padding-top: 10px;
+}

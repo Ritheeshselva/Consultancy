@@ -1,0 +1,27 @@
+.search-input {
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  width: 300px;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.invoice-meta {
+  text-align: right;
+}
+
+.invoice-meta p {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
