@@ -102,6 +102,7 @@ function InvoiceHistory({ invoices }) {
                   <table className="invoice-table">
                     <thead>
                       <tr>
+                        <th>S.No</th>
                         <th>Product</th>
                         <th>Qty</th>
                         <th>Price</th>
@@ -109,8 +110,9 @@ function InvoiceHistory({ invoices }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedInvoice.items.map(item => (
+                      {selectedInvoice.items.map((item, index) => (
                         <tr key={item.id}>
+                          <td style={{ textAlign: 'center' }}>{index + 1}</td>
                           <td>{item.productName}</td>
                           <td style={{ textAlign: 'center' }}>{item.quantity}</td>
                           <td style={{ textAlign: 'right' }}>₹{item.price}</td>
@@ -137,16 +139,8 @@ function InvoiceHistory({ invoices }) {
                     </div>
                   </div>
 
-                  {selectedInvoice.notes && (
-                    <div className="notes">
-                      <strong>Notes:</strong>
-                      <p>{selectedInvoice.notes}</p>
-                    </div>
-                  )}
-
                   <div style={{ textAlign: 'center', marginTop: '30px', color: 'var(--text-light)', fontSize: '12px' }}>
-                    <p>Thank you for your business!</p>
-                    <p>This is a computer generated document.</p>
+                    <p>Thankyou</p>
                   </div>
                 </div>
 

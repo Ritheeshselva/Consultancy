@@ -1,16 +1,31 @@
 import { useState } from 'react'
 import './CustomerManagement.css'
 
-function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDeleteCustomer }) {
+function CustomerManagement({ customers, invoices, onAddCustomer, onUpdateCustomer, onDeleteCustomer }) {
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     phone: '',
-    address: '',
   })
   const [searchTerm, setSearchTerm] = useState('')
+
+  const latestInvoiceByPhone = invoices.reduce((acc, invoice) => {
+    const phone = (invoice.customerPhone || '').trim()
+    if (!phone) {
+      return acc
+    }
+
+    const existing = acc[phone]
+    const invoiceDate = new Date(invoice.date || 0).getTime()
+    const existingDate = existing ? new Date(existing.date || 0).getTime() : 0
+
+    if (!existing || invoiceDate >= existingDate) {
+      acc[phone] = invoice
+    }
+
+    return acc
+  }, {})
 
   const filteredCustomers = customers.filter(c =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -20,10 +35,13 @@ function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDele
   const handleOpenModal = (customer = null) => {
     if (customer) {
       setEditingCustomer(customer)
-      setFormData(customer)
+      setFormData({
+        name: customer.name || '',
+        phone: customer.phone || '',
+      })
     } else {
       setEditingCustomer(null)
-      setFormData({ name: '', email: '', phone: '', address: '' })
+      setFormData({ name: '', phone: '' })
     }
     setShowModal(true)
   }
@@ -79,19 +97,22 @@ function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDele
             <thead>
               <tr>
                 <th>Customer Name</th>
-                <th>Email</th>
                 <th>Phone</th>
-                <th>Address</th>
+                <th>Invoice ID</th>
+                <th>Date of Purchase</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredCustomers.map(customer => (
+              {filteredCustomers.map(customer => {
+                const latestInvoice = latestInvoiceByPhone[(customer.phone || '').trim()]
+
+                return (
                 <tr key={customer.id}>
                   <td><strong>{customer.name}</strong></td>
-                  <td>{customer.email}</td>
                   <td>{customer.phone}</td>
-                  <td>{customer.address}</td>
+                  <td>{latestInvoice?.invoiceNo || '-'}</td>
+                  <td>{latestInvoice?.date || '-'}</td>
                   <td>
                     <div className="action-buttons">
                       <button
@@ -115,7 +136,8 @@ function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDele
                     </div>
                   </td>
                 </tr>
-              ))}
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -141,17 +163,6 @@ function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDele
             </div>
 
             <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="e.g., contact@company.com"
-              />
-            </div>
-
-            <div className="form-group">
               <label>Phone Number</label>
               <input
                 type="tel"
@@ -159,17 +170,6 @@ function CustomerManagement({ customers, onAddCustomer, onUpdateCustomer, onDele
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="e.g., 9876543210"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Address</label>
-              <textarea
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Enter full address"
-                rows="3"
               />
             </div>
 

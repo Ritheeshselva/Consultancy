@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
@@ -6,64 +6,145 @@ import NewInvoice from './pages/NewInvoice'
 import InvoiceHistory from './pages/InvoiceHistory'
 import ProductManagement from './pages/ProductManagement'
 import CustomerManagement from './pages/CustomerManagement'
+import api from './services/api'
+
+const mapProduct = (product) => ({
+  ...product,
+  id: product._id || product.id,
+})
+
+const mapCustomer = (customer) => ({
+  ...customer,
+  id: customer._id || customer.id,
+})
+
+const mapInvoice = (invoice) => ({
+  ...invoice,
+  id: invoice._id || invoice.id,
+  date: invoice.date
+    ? new Date(invoice.date).toISOString().split('T')[0]
+    : new Date().toISOString().split('T')[0],
+  items: (invoice.items || []).map((item, index) => ({
+    ...item,
+    id: item.id || `${invoice._id || invoice.id}-${index}`,
+  })),
+})
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [invoices, setInvoices] = useState([])
-  const [products, setProducts] = useState([
-    { id: 1, name: 'AC Induction Motor 1HP', category: 'Motor', price: 3500, quantity: 5 },
-    { id: 2, name: 'AC Induction Motor 2HP', category: 'Motor', price: 5500, quantity: 3 },
-    { id: 3, name: 'DC Motor 5HP', category: 'Motor', price: 8000, quantity: 2 },
-    { id: 4, name: 'Capacitor 10μF', category: 'Parts', price: 250, quantity: 50 },
-    { id: 5, name: 'Motor Bearing', category: 'Parts', price: 450, quantity: 25 },
-    { id: 6, name: 'Winding Wire', category: 'Parts', price: 80, quantity: 100 },
-  ])
-  const [customers, setCustomers] = useState([
-    { id: 1, name: 'ABC Manufacturing', email: 'contact@abc.com', phone: '9876543210', address: '123 Industrial St' },
-    { id: 2, name: 'XYZ Industries', email: 'info@xyz.com', phone: '9123456780', address: '456 Factory Road' },
-  ])
+  const [products, setProducts] = useState([])
+  const [customers, setCustomers] = useState([])
 
-  const handleAddInvoice = (invoice) => {
-    const newInvoice = {
-      ...invoice,
-      id: Math.max(...invoices.map(i => i.id), 0) + 1,
-      invoiceNo: `INV-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const [productData, customerData, invoiceData] = await Promise.all([
+          api.get('/products'),
+          api.get('/customers'),
+          api.get('/invoices'),
+        ])
+
+        setProducts(productData.map(mapProduct))
+        setCustomers(customerData.map(mapCustomer))
+        setInvoices(invoiceData.map(mapInvoice))
+      } catch (error) {
+        console.error('Failed to load data from backend:', error.message)
+      }
     }
-    setInvoices([newInvoice, ...invoices])
-    setCurrentPage('history')
-  }
 
-  const handleAddProduct = (product) => {
-    const newProduct = {
-      ...product,
-      id: Math.max(...products.map(p => p.id), 0) + 1,
+    loadInitialData()
+  }, [])
+
+  const handleAddInvoice = async (invoice) => {
+    try {
+      const createdInvoice = await api.post('/invoices', invoice)
+
+      const normalizedPhone = (invoice.customerPhone || '').trim()
+      const normalizedName = (invoice.customerName || '').trim()
+
+      if (normalizedPhone && normalizedName) {
+        const customerExists = customers.some(
+          (customer) => (customer.phone || '').trim() === normalizedPhone
+        )
+
+        if (!customerExists) {
+          const createdCustomer = await api.post('/customers', {
+            name: normalizedName,
+            phone: normalizedPhone,
+            email: '',
+            address: '',
+          })
+
+          setCustomers((prev) => [mapCustomer(createdCustomer), ...prev])
+        }
+      }
+
+      setInvoices((prev) => [mapInvoice(createdInvoice), ...prev])
+      setCurrentPage('history')
+    } catch (error) {
+      alert(error.message || 'Failed to create invoice')
     }
-    setProducts([...products, newProduct])
   }
 
-  const handleUpdateProduct = (id, updatedProduct) => {
-    setProducts(products.map(p => p.id === id ? { ...p, ...updatedProduct } : p))
-  }
-
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id))
-  }
-
-  const handleAddCustomer = (customer) => {
-    const newCustomer = {
-      ...customer,
-      id: Math.max(...customers.map(c => c.id), 0) + 1,
+  const handleAddProduct = async (product) => {
+    try {
+      const createdProduct = await api.post('/products', product)
+      setProducts((prev) => [mapProduct(createdProduct), ...prev])
+    } catch (error) {
+      alert(error.message || 'Failed to add product')
     }
-    setCustomers([...customers, newCustomer])
   }
 
-  const handleUpdateCustomer = (id, updatedCustomer) => {
-    setCustomers(customers.map(c => c.id === id ? { ...c, ...updatedCustomer } : c))
+  const handleUpdateProduct = async (id, updatedProduct) => {
+    try {
+      const savedProduct = await api.put(`/products/${id}`, updatedProduct)
+      setProducts((prev) => prev.map((p) => (p.id === id ? mapProduct(savedProduct) : p)))
+    } catch (error) {
+      alert(error.message || 'Failed to update product')
+    }
   }
 
-  const handleDeleteCustomer = (id) => {
-    setCustomers(customers.filter(c => c.id !== id))
+  const handleDeleteProduct = async (id) => {
+    try {
+      await api.delete(`/products/${id}`)
+      setProducts((prev) => prev.filter((p) => p.id !== id))
+    } catch (error) {
+      alert(error.message || 'Failed to delete product')
+    }
+  }
+
+  const handleAddCustomer = async (customer) => {
+    try {
+      const createdCustomer = await api.post('/customers', {
+        name: customer.name,
+        phone: customer.phone,
+      })
+      setCustomers((prev) => [mapCustomer(createdCustomer), ...prev])
+    } catch (error) {
+      alert(error.message || 'Failed to add customer')
+    }
+  }
+
+  const handleUpdateCustomer = async (id, updatedCustomer) => {
+    try {
+      const savedCustomer = await api.put(`/customers/${id}`, {
+        name: updatedCustomer.name,
+        phone: updatedCustomer.phone,
+      })
+      setCustomers((prev) => prev.map((c) => (c.id === id ? mapCustomer(savedCustomer) : c)))
+    } catch (error) {
+      alert(error.message || 'Failed to update customer')
+    }
+  }
+
+  const handleDeleteCustomer = async (id) => {
+    try {
+      await api.delete(`/customers/${id}`)
+      setCustomers((prev) => prev.filter((c) => c.id !== id))
+    } catch (error) {
+      alert(error.message || 'Failed to delete customer')
+    }
   }
 
   return (
@@ -71,7 +152,7 @@ function App() {
       <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <main className="main-content">
         {currentPage === 'dashboard' && <Dashboard invoices={invoices} products={products} customers={customers} />}
-        {currentPage === 'invoice' && <NewInvoice products={products} customers={customers} onAddInvoice={handleAddInvoice} />}
+        {currentPage === 'invoice' && <NewInvoice products={products} onAddInvoice={handleAddInvoice} />}
         {currentPage === 'history' && <InvoiceHistory invoices={invoices} />}
         {currentPage === 'products' && (
           <ProductManagement 
@@ -84,6 +165,7 @@ function App() {
         {currentPage === 'customers' && (
           <CustomerManagement 
             customers={customers}
+            invoices={invoices}
             onAddCustomer={handleAddCustomer}
             onUpdateCustomer={handleUpdateCustomer}
             onDeleteCustomer={handleDeleteCustomer}

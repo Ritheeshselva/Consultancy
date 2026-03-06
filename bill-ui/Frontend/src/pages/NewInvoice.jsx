@@ -1,56 +1,85 @@
 import { useState } from 'react'
 import './NewInvoice.css'
 
-function NewInvoice({ products, customers, onAddInvoice }) {
-  const [selectedCustomer, setSelectedCustomer] = useState('')
+function NewInvoice({ products, onAddInvoice }) {
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [items, setItems] = useState([])
-  const [selectedProduct, setSelectedProduct] = useState('')
-  const [quantity, setQuantity] = useState('')
+  const [productSearch, setProductSearch] = useState('')
   const [gst, setGst] = useState('18')
-  const [notes, setNotes] = useState('')
 
-  const handleCustomerSelect = (e) => {
-    const customerId = e.target.value
-    setSelectedCustomer(customerId)
-    if (customerId) {
-      const customer = customers.find(c => c.id === parseInt(customerId))
-      setCustomerName(customer.name)
-      setCustomerPhone(customer.phone)
-    }
+  const handleAddItem = (product) => {
+    setItems((prevItems) => {
+      const existingItem = prevItems.find((item) => String(item.productId) === String(product.id))
+
+      if (existingItem) {
+        return prevItems.map((item) => {
+          if (String(item.productId) !== String(product.id)) {
+            return item
+          }
+
+          const updatedQuantity = item.quantity + 1
+          return {
+            ...item,
+            quantity: updatedQuantity,
+            total: item.price * updatedQuantity,
+          }
+        })
+      }
+
+      return [
+        ...prevItems,
+        {
+          id: Math.random(),
+          productId: product.id,
+          productName: product.name,
+          price: product.price,
+          quantity: 1,
+          total: product.price,
+        },
+      ]
+    })
   }
 
-  const handleAddItem = () => {
-    if (!selectedProduct || !quantity) {
-      alert('Please select a product and enter quantity')
-      return
-    }
-    const product = products.find(p => p.id === parseInt(selectedProduct))
-    const newItem = {
-      id: Math.random(),
-      productId: product.id,
-      productName: product.name,
-      price: product.price,
-      quantity: parseInt(quantity),
-      total: product.price * parseInt(quantity),
-    }
-    setItems([...items, newItem])
-    setSelectedProduct('')
-    setQuantity('')
-  }
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(productSearch.toLowerCase())
+  )
 
   const handleRemoveItem = (id) => {
     setItems(items.filter(item => item.id !== id))
   }
 
+  const handleDecreaseItemQuantity = (id) => {
+    setItems((prevItems) =>
+      prevItems
+        .map((item) => {
+          if (item.id !== id) {
+            return item
+          }
+
+          const updatedQuantity = item.quantity - 1
+          if (updatedQuantity <= 0) {
+            return null
+          }
+
+          return {
+            ...item,
+            quantity: updatedQuantity,
+            total: item.price * updatedQuantity,
+          }
+        })
+        .filter(Boolean)
+    )
+  }
+
   const subtotal = items.reduce((sum, item) => sum + item.total, 0)
-  const gstAmount = (subtotal * parseInt(gst)) / 100
+  const gstValue = Number(gst) || 0
+  const gstAmount = (subtotal * gstValue) / 100
   const total = subtotal + gstAmount
 
   const handleSubmit = () => {
-    if (!customerName || items.length === 0) {
-      alert('Please select a customer and add items')
+    if (!customerName || !customerPhone || items.length === 0) {
+      alert('Please enter customer name, phone, and add items')
       return
     }
     onAddInvoice({
@@ -58,10 +87,9 @@ function NewInvoice({ products, customers, onAddInvoice }) {
       customerPhone,
       items,
       subtotal,
-      gst: parseInt(gst),
+      gst: gstValue,
       gstAmount,
       total,
-      notes,
     })
   }
 
@@ -73,15 +101,6 @@ function NewInvoice({ products, customers, onAddInvoice }) {
         <div className="form-section">
           <h2>Customer Information</h2>
           <div className="form-row">
-            <div className="form-group">
-              <label>Select Customer</label>
-              <select value={selectedCustomer} onChange={handleCustomerSelect}>
-                <option value="">-- Select Customer --</option>
-                {customers.map(customer => (
-                  <option key={customer.id} value={customer.id}>{customer.name}</option>
-                ))}
-              </select>
-            </div>
             <div className="form-group">
               <label>Customer Name</label>
               <input 
@@ -105,38 +124,43 @@ function NewInvoice({ products, customers, onAddInvoice }) {
 
         <div className="form-section">
           <h2>Add Items</h2>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Product</label>
-              <select value={selectedProduct} onChange={(e) => setSelectedProduct(e.target.value)}>
-                <option value="">-- Select Product --</option>
-                {products.map(product => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} - ₹{product.price}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Quantity</label>
-              <input 
-                type="number" 
-                value={quantity} 
-                onChange={(e) => setQuantity(e.target.value)}
-                min="1"
-                placeholder="Enter quantity"
-              />
-            </div>
-            <div className="form-group">
-              <label>&nbsp;</label>
-              <button onClick={handleAddItem} style={{ width: '100%' }}>+ Add Item</button>
-            </div>
+          <div className="form-group">
+            <label>Search Product</label>
+            <input
+              type="text"
+              placeholder="Search by product name..."
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="product-list">
+            {filteredProducts.length === 0 ? (
+              <p className="no-products">No matching products found</p>
+            ) : (
+              filteredProducts.map((product) => (
+                <div key={product.id} className="product-row">
+                  <div className="product-info">
+                    <strong>{product.name}</strong>
+                    <span>₹{product.price}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="add-product-btn"
+                    onClick={() => handleAddItem(product)}
+                  >
+                    +
+                  </button>
+                </div>
+              ))
+            )}
           </div>
 
           {items.length > 0 && (
             <table className="items-table">
               <thead>
                 <tr>
+                  <th>S.No</th>
                   <th>Product</th>
                   <th>Price</th>
                   <th>Qty</th>
@@ -145,11 +169,23 @@ function NewInvoice({ products, customers, onAddInvoice }) {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item, index) => (
                   <tr key={item.id}>
+                    <td>{index + 1}</td>
                     <td>{item.productName}</td>
                     <td>₹{item.price}</td>
-                    <td>{item.quantity}</td>
+                    <td>
+                      <div className="qty-control">
+                        <button
+                          type="button"
+                          className="qty-btn"
+                          onClick={() => handleDecreaseItemQuantity(item.id)}
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                      </div>
+                    </td>
                     <td>₹{item.total}</td>
                     <td>
                       <button 
@@ -171,21 +207,12 @@ function NewInvoice({ products, customers, onAddInvoice }) {
           <h2>Additional Information</h2>
           <div className="form-group">
             <label>GST %</label>
-            <select value={gst} onChange={(e) => setGst(e.target.value)}>
-              <option value="0">0%</option>
-              <option value="5">5%</option>
-              <option value="12">12%</option>
-              <option value="18">18%</option>
-              <option value="28">28%</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Notes</label>
-            <textarea 
-              value={notes} 
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any additional notes or terms"
-              rows="4"
+            <input
+              type="number"
+              min="0"
+              value={gst}
+              onChange={(e) => setGst(e.target.value)}
+              placeholder="Enter GST percentage"
             />
           </div>
         </div>

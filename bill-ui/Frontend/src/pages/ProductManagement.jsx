@@ -88,6 +88,7 @@ function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeletePr
           <table>
             <thead>
               <tr>
+                <th>S.No</th>
                 <th>Product Name</th>
                 <th>Category</th>
                 <th>Price</th>
@@ -96,8 +97,9 @@ function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeletePr
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map(product => (
+              {filteredProducts.map((product, index) => (
                 <tr key={product.id}>
+                  <td>{index + 1}</td>
                   <td><strong>{product.name}</strong></td>
                   <td>{product.category}</td>
                   <td>₹{product.price}</td>
