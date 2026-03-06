@@ -16,10 +16,26 @@ dotenv.config({ path: path.resolve(__dirname, "../.env"), override: true });
 
 const app = express();
 const port = process.env.PORT || 5000;
+const configuredClientOrigin = process.env.CLIENT_URL;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const isConfiguredOrigin = configuredClientOrigin && origin === configuredClientOrigin;
+      const isLocalDevOrigin =
+        /^http:\/\/localhost:\d+$/.test(origin) ||
+        /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+
+      if (isConfiguredOrigin || isLocalDevOrigin) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
   })
 );
 app.use(express.json());
