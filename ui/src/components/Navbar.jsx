@@ -8,7 +8,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          Company Name
+          SELVAM ELECTRICALS AND MOTORS
         </Link>
         <ul className="navbar-menu">
           <li>
@@ -22,8 +22,8 @@ function Navbar() {
             </Link>
           </li>
           <li>
-            <Link to="/services" className={location.pathname === '/services' ? 'active' : ''}>
-              Services
+            <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>
+              About Us
             </Link>
           </li>
           <li>

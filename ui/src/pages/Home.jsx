@@ -1,49 +1,87 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './Home.css';
 
 function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const images = [
+    '/img/img1.jpg',
+    '/img/img2.jpg',
+    '/img/images3.jpg'
+  ];
+
+  const featureItems = [
+    {
+      name: 'AGRICULTURE PUMPS',
+      image: '/img/home1.png',
+      description: 'Efficient pumps for irrigation, borewells, and reliable farm water supply.'
+    },
+    {
+      name: 'RESIDENTIAL PUMPS',
+      image: '/img/home2.png',
+      description: 'Quiet, dependable pumps for home water pressure and daily usage needs.'
+    },
+    {
+      name: 'WIRES & CABLES',
+      image: '/img/home3.png',
+      description: 'Safe, durable wires and cables for stable power in every installation.'
+    },
+    {
+      name: 'PIPES',
+      image: '/img/home4.png',
+      description: 'Strong, leak-resistant pipes for water flow, plumbing, and drainage systems.'
+    },
+    {
+      name: 'VALVES',
+      image: '/img/home5.png',
+      description: 'Precision valves for smooth flow control and long-lasting performance.'
+    },
+    {
+      name: 'SOLAR PUMPS',
+      image: '/img/home6.png',
+      description: 'Solar-powered pumps that cut energy costs and support sustainable operation.'
+    }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % images.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <div className="home">
       <section className="hero">
+        <div className="image-slider">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={`slide ${index === currentSlide ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${image})` }}
+            />
+          ))}
+        </div>
         <div className="hero-content">
-          <h1 className="hero-title">Title Here</h1>
-          <p className="hero-subtitle">Subtitle</p>
-          <div className="hero-buttons">
-            <Link to="/products" className="btn btn-primary">Button 1</Link>
-            <Link to="/contact" className="btn btn-secondary">Button 2</Link>
-          </div>
         </div>
       </section>
 
       <section className="features">
         <div className="container">
-          <h2 className="section-title">Section Title</h2>
           <div className="features-grid">
-            <div className="feature-card">
-              <h3>Feature 1</h3>
-              <p>Description</p>
-            </div>
-            <div className="feature-card">
-              <h3>Feature 2</h3>
-              <p>Description</p>
-            </div>
-            <div className="feature-card">
-              <h3>Feature 3</h3>
-              <p>Description</p>
-            </div>
-            <div className="feature-card">
-              <h3>Feature 4</h3>
-              <p>Description</p>
-            </div>
+            {featureItems.map((item) => (
+              <div className="feature-card" key={item.name}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="feature-image"
+                  loading="lazy"
+                />
+                <h3>{item.name}</h3>
+                <p>{item.description}</p>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      <section className="cta">
-        <div className="container">
-          <h2>CTA Section</h2>
-          <p>Description</p>
-          <Link to="/contact" className="btn btn-light">Button</Link>
         </div>
       </section>
     </div>

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Contact.css';
 
 function Contact() {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -9,6 +10,20 @@ function Contact() {
     subject: '',
     message: ''
   });
+
+  const images = [
+    '/img/img1.jpg',
+    '/img/img2.jpg',
+    '/img/images3.jpg'
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % images.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,7 +34,7 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Form submitted');
+    alert('Thank you! Our team will contact you shortly.');
     setFormData({
       name: '',
       email: '',
@@ -32,60 +47,67 @@ function Contact() {
   return (
     <div className="contact">
       <section className="contact-hero">
-        <h1>Contact</h1>
-        <p>Description</p>
+        <div className="image-slider">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className={`slide ${index === currentSlide ? 'active' : ''}`}
+              style={{ backgroundImage: `url(${image})` }}
+            />
+          ))}
+        </div>
       </section>
 
       <div className="container">
         <div className="contact-content">
           <div className="contact-info">
-            <h2>Info Section</h2>
-            <p>Description</p>
+            <h2>Contact Information</h2>
+            <p>We are available during business hours for all sales and support requests.</p>
             
             <div className="info-item">
               <div>
-                <h4>Info 1</h4>
-                <p>Content</p>
+                <h4>Phone</h4>
+                <p>+91 98765 43210</p>
               </div>
             </div>
 
             <div className="info-item">
               <div>
-                <h4>Info 2</h4>
-                <p>Content</p>
+                <h4>Email</h4>
+                <p>info@selvammotors.com</p>
               </div>
             </div>
 
             <div className="info-item">
               <div>
-                <h4>Info 3</h4>
-                <p>Content</p>
+                <h4>Address</h4>
+                <p>Selvam Electricals and Motors, Main Road, Tamil Nadu</p>
               </div>
             </div>
 
             <div className="info-item">
               <div>
-                <h4>Info 4</h4>
-                <p>Content</p>
+                <h4>Business Hours</h4>
+                <p>Mon - Fri: 9:00 AM - 8:00 PM | Sat: 9:00 AM - 6:00 PM | Sun: 10:00 AM - 2:00 PM</p>
               </div>
             </div>
 
             <div className="social-links">
-              <h4>Social</h4>
+              <h4>Follow Us</h4>
               <div className="social-icons">
-                <a href="#" className="social-icon">📘</a>
-                <a href="#" className="social-icon">📷</a>
-                <a href="#" className="social-icon">🐦</a>
-                <a href="#" className="social-icon">💼</a>
+                <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Facebook">📘</a>
+                <a href="https://www.instagram.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Instagram">📷</a>
+                <a href="https://www.youtube.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="YouTube">▶️</a>
+                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="social-icon" aria-label="WhatsApp">💬</a>
               </div>
             </div>
           </div>
 
           <div className="contact-form-wrapper">
-            <h2>Form</h2>
+            <h2>Send an Enquiry</h2>
             <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="name">Input 1 *</label>
+                <label htmlFor="name">Full Name *</label>
                 <input
                   type="text"
                   id="name"
@@ -93,12 +115,12 @@ function Contact() {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  placeholder="Placeholder"
+                  placeholder="Enter your full name"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="email">Input 2 *</label>
+                <label htmlFor="email">Email Address *</label>
                 <input
                   type="email"
                   id="email"
@@ -106,24 +128,24 @@ function Contact() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="Placeholder"
+                  placeholder="Enter your email"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="phone">Input 3</label>
+                <label htmlFor="phone">Phone Number</label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="Placeholder"
+                  placeholder="Enter your mobile number"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="subject">Input 4 *</label>
+                <label htmlFor="subject">Subject *</label>
                 <input
                   type="text"
                   id="subject"
@@ -131,12 +153,12 @@ function Contact() {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  placeholder="Placeholder"
+                  placeholder="Product enquiry / service request"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="message">Input 5 *</label>
+                <label htmlFor="message">Message *</label>
                 <textarea
                   id="message"
                   name="message"
@@ -144,11 +166,11 @@ function Contact() {
                   onChange={handleChange}
                   required
                   rows="5"
-                  placeholder="Placeholder"
+                  placeholder="Share your requirement with quantity, model, or capacity"
                 ></textarea>
               </div>
 
-              <button type="submit" className="btn-submit">Button</button>
+              <button type="submit" className="btn-submit">Send Message</button>
             </form>
           </div>
         </div>
@@ -156,12 +178,12 @@ function Contact() {
 
       <section className="map-section">
         <div className="container">
-          <h2>Map Section</h2>
+          <h2>Visit Our Store</h2>
           <div className="map-placeholder">
             <div className="map-content">
-              <h3>Title</h3>
-              <p>Content</p>
-              <p className="map-note">Map area</p>
+              <h3>Selvam Electricals and Motors</h3>
+              <p>Main Road, Tamil Nadu</p>
+              <p className="map-note">Google Maps integration can be added here.</p>
             </div>
           </div>
         </div>
