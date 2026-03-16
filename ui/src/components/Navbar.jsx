@@ -8,7 +8,8 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          SELVAM ELECTRICALS AND MOTORS
+          <img src="/img/logo.png" alt="Selvam Motors logo" className="navbar-logo-image" />
+          <span>SELVAM MOTORS</span>
         </Link>
         <ul className="navbar-menu">
           <li>
