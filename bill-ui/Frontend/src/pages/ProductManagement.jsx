@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './ProductManagement.css'
 
-function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeleteProduct }) {
+function ProductManagement({ products, isAdmin, onAddProduct, onUpdateProduct, onDeleteProduct }) {
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [formData, setFormData] = useState({
@@ -74,9 +74,15 @@ function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeletePr
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
-          <button onClick={() => handleOpenModal()}>+ Add Product</button>
+          {isAdmin && <button onClick={() => handleOpenModal()}>+ Add Product</button>}
         </div>
       </div>
+
+      {!isAdmin && (
+        <p style={{ color: 'var(--text-light)', marginBottom: '16px' }}>
+          You can view products. Only admin can add, edit, or delete products.
+        </p>
+      )}
 
       {filteredProducts.length === 0 ? (
         <div className="empty-state" style={{ marginTop: '50px' }}>
@@ -93,7 +99,7 @@ function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeletePr
                 <th>Category</th>
                 <th>Price</th>
                 <th>Stock</th>
-                <th>Actions</th>
+                {isAdmin && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -108,28 +114,30 @@ function ProductManagement({ products, onAddProduct, onUpdateProduct, onDeletePr
                       {product.quantity} units
                     </span>
                   </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="secondary"
-                        onClick={() => handleOpenModal(product)}
-                        style={{ padding: '5px 10px', fontSize: '12px' }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="danger"
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this product?')) {
-                            onDeleteProduct(product.id)
-                          }
-                        }}
-                        style={{ padding: '5px 10px', fontSize: '12px' }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+                  {isAdmin && (
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="secondary"
+                          onClick={() => handleOpenModal(product)}
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="danger"
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this product?')) {
+                              onDeleteProduct(product.id)
+                            }
+                          }}
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

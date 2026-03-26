@@ -9,6 +9,8 @@ import customerRoutes from "./routes/customerRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import authenticateToken from "./middleware/auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,6 +45,9 @@ app.use(express.json());
 app.get("/api/health", (_req, res) => {
   res.json({ message: "Backend is running" });
 });
+
+app.use("/api/auth", authRoutes);
+app.use("/api", authenticateToken);
 
 app.use("/api/products", productRoutes);
 app.use("/api/customers", customerRoutes);

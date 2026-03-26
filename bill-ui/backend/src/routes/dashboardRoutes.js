@@ -2,11 +2,12 @@ import express from "express";
 import Customer from "../models/Customer.js";
 import Invoice from "../models/Invoice.js";
 import Product from "../models/Product.js";
+import { authorizeRoles } from "../middleware/auth.js";
 
 const router = express.Router();
 const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-router.get("/stats", asyncHandler(async (_req, res) => {
+router.get("/stats", authorizeRoles("admin"), asyncHandler(async (_req, res) => {
   const [totalInvoices, totalRevenueData, totalProducts, customersCount, stockData, recentInvoices] =
     await Promise.all([
       Invoice.countDocuments(),

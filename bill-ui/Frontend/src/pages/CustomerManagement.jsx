@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './CustomerManagement.css'
 
-function CustomerManagement({ customers, invoices, onAddCustomer, onUpdateCustomer, onDeleteCustomer }) {
+function CustomerManagement({ customers, invoices, isAdmin, onAddCustomer, onUpdateCustomer, onDeleteCustomer }) {
   const [showModal, setShowModal] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState(null)
   const [formData, setFormData] = useState({
@@ -82,9 +82,15 @@ function CustomerManagement({ customers, invoices, onAddCustomer, onUpdateCustom
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
-          <button onClick={() => handleOpenModal()}>+ Add Customer</button>
+          {isAdmin && <button onClick={() => handleOpenModal()}>+ Add Customer</button>}
         </div>
       </div>
+
+      {!isAdmin && (
+        <p style={{ color: 'var(--text-light)', marginBottom: '16px' }}>
+          You can view customers. Only admin can add, edit, or delete customers.
+        </p>
+      )}
 
       {filteredCustomers.length === 0 ? (
         <div className="empty-state" style={{ marginTop: '50px' }}>
@@ -100,7 +106,7 @@ function CustomerManagement({ customers, invoices, onAddCustomer, onUpdateCustom
                 <th>Phone</th>
                 <th>Invoice ID</th>
                 <th>Date of Purchase</th>
-                <th>Actions</th>
+                {isAdmin && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -113,28 +119,30 @@ function CustomerManagement({ customers, invoices, onAddCustomer, onUpdateCustom
                   <td>{customer.phone}</td>
                   <td>{latestInvoice?.invoiceNo || '-'}</td>
                   <td>{latestInvoice?.date || '-'}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="secondary"
-                        onClick={() => handleOpenModal(customer)}
-                        style={{ padding: '5px 10px', fontSize: '12px' }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="danger"
-                        onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this customer?')) {
-                            onDeleteCustomer(customer.id)
-                          }
-                        }}
-                        style={{ padding: '5px 10px', fontSize: '12px' }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+                  {isAdmin && (
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="secondary"
+                          onClick={() => handleOpenModal(customer)}
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="danger"
+                          onClick={() => {
+                            if (window.confirm('Are you sure you want to delete this customer?')) {
+                              onDeleteCustomer(customer.id)
+                            }
+                          }}
+                          style={{ padding: '5px 10px', fontSize: '12px' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
                 )
               })}

@@ -6,6 +6,7 @@ import NewInvoice from './pages/NewInvoice'
 import InvoiceHistory from './pages/InvoiceHistory'
 import ProductManagement from './pages/ProductManagement'
 import CustomerManagement from './pages/CustomerManagement'
+import Login from './pages/Login'
 import api from './services/api'
 
 const mapProduct = (product) => ({
@@ -31,12 +32,49 @@ const mapInvoice = (invoice) => ({
 })
 
 function App() {
+  const storedUser = api.auth.getUser()
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [invoices, setInvoices] = useState([])
   const [products, setProducts] = useState([])
   const [customers, setCustomers] = useState([])
+  const [userName, setUserName] = useState(storedUser?.name || '')
+  const [userRole, setUserRole] = useState(storedUser?.role || '')
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
+
+  const isAuthenticated = Boolean(api.auth.getToken())
+  const isAdmin = userRole === 'admin'
+
+  const handleLogout = () => {
+    api.auth.logout()
+    setUserName('')
+    setUserRole('')
+    setInvoices([])
+    setProducts([])
+    setCustomers([])
+    setCurrentPage('dashboard')
+  }
+
+  const handleLogin = async (name, password) => {
+    setIsAuthLoading(true)
+
+    try {
+      const response = await api.auth.login(name, password)
+      setUserName(response.user.name)
+      setUserRole(response.user.role)
+      setCurrentPage(response.user.role === 'admin' ? 'dashboard' : 'invoice')
+      return { ok: true }
+    } catch (error) {
+      return { ok: false, message: error.message || 'Login failed' }
+    } finally {
+      setIsAuthLoading(false)
+    }
+  }
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return
+    }
+
     const loadInitialData = async () => {
       try {
         const [productData, customerData, invoiceData] = await Promise.all([
@@ -49,12 +87,23 @@ function App() {
         setCustomers(customerData.map(mapCustomer))
         setInvoices(invoiceData.map(mapInvoice))
       } catch (error) {
+        if (error.message === 'Unauthorized' || error.message === 'Invalid or expired token') {
+          handleLogout()
+          return
+        }
+
         console.error('Failed to load data from backend:', error.message)
       }
     }
 
     loadInitialData()
-  }, [])
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    if (!isAdmin && currentPage === 'dashboard') {
+      setCurrentPage('invoice')
+    }
+  }, [isAdmin, currentPage])
 
   const handleAddInvoice = async (invoice) => {
     try {
@@ -63,7 +112,7 @@ function App() {
       const normalizedPhone = (invoice.customerPhone || '').trim()
       const normalizedName = (invoice.customerName || '').trim()
 
-      if (normalizedPhone && normalizedName) {
+      if (isAdmin && normalizedPhone && normalizedName) {
         const customerExists = customers.some(
           (customer) => (customer.phone || '').trim() === normalizedPhone
         )
@@ -147,16 +196,29 @@ function App() {
     }
   }
 
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} loading={isAuthLoading} />
+  }
+
   return (
     <div className="app">
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Navbar
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        userName={userName}
+        userRole={userRole}
+        onLogout={handleLogout}
+      />
       <main className="main-content">
-        {currentPage === 'dashboard' && <Dashboard invoices={invoices} products={products} customers={customers} />}
+        {currentPage === 'dashboard' && isAdmin && (
+          <Dashboard invoices={invoices} products={products} customers={customers} />
+        )}
         {currentPage === 'invoice' && <NewInvoice products={products} onAddInvoice={handleAddInvoice} />}
         {currentPage === 'history' && <InvoiceHistory invoices={invoices} />}
         {currentPage === 'products' && (
           <ProductManagement 
             products={products} 
+            isAdmin={isAdmin}
             onAddProduct={handleAddProduct}
             onUpdateProduct={handleUpdateProduct}
             onDeleteProduct={handleDeleteProduct}
@@ -166,6 +228,7 @@ function App() {
           <CustomerManagement 
             customers={customers}
             invoices={invoices}
+            isAdmin={isAdmin}
             onAddCustomer={handleAddCustomer}
             onUpdateCustomer={handleUpdateCustomer}
             onDeleteCustomer={handleDeleteCustomer}

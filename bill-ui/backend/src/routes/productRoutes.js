@@ -1,5 +1,6 @@
 import express from "express";
 import Product from "../models/Product.js";
+import { authorizeRoles } from "../middleware/auth.js";
 
 const router = express.Router();
 const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -9,12 +10,12 @@ router.get("/", asyncHandler(async (_req, res) => {
   res.json(products);
 }));
 
-router.post("/", asyncHandler(async (req, res) => {
+router.post("/", authorizeRoles("admin"), asyncHandler(async (req, res) => {
   const createdProduct = await Product.create(req.body);
   res.status(201).json(createdProduct);
 }));
 
-router.put("/:id", asyncHandler(async (req, res) => {
+router.put("/:id", authorizeRoles("admin"), asyncHandler(async (req, res) => {
   const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -27,7 +28,7 @@ router.put("/:id", asyncHandler(async (req, res) => {
   res.json(updatedProduct);
 }));
 
-router.delete("/:id", asyncHandler(async (req, res) => {
+router.delete("/:id", authorizeRoles("admin"), asyncHandler(async (req, res) => {
   const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
   if (!deletedProduct) {

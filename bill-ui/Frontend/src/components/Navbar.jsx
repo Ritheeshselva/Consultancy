@@ -1,8 +1,9 @@
 import './Navbar.css'
 
-function Navbar({ currentPage, setCurrentPage }) {
+function Navbar({ currentPage, setCurrentPage, userName, userRole, onLogout }) {
+  const isAdmin = userRole === 'admin'
   const menuItems = [
-    { id: 'dashboard', label: '📊 Dashboard' },
+    ...(isAdmin ? [{ id: 'dashboard', label: '📊 Dashboard' }] : []),
     { id: 'invoice', label: '📄 New Invoice' },
     { id: 'history', label: '📋 Invoice History' },
     { id: 'products', label: '🛠️ Products' },
@@ -28,6 +29,8 @@ function Navbar({ currentPage, setCurrentPage }) {
         ))}
       </ul>
       <div className="navbar-footer">
+        <p className="user-name">Signed in as {userName} ({userRole})</p>
+        <button className="logout-btn" onClick={onLogout}>Logout</button>
         <p>© 2024 Selvam Motors</p>
       </div>
     </nav>

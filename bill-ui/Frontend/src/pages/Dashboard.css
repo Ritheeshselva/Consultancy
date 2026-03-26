@@ -1,0 +1,38 @@
+.dashboard-filter-card {
+	margin-bottom: 24px;
+}
+
+.dashboard-filter-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+	gap: 12px;
+}
+
+.dashboard-filter-top h2 {
+	margin: 0;
+}
+
+.dashboard-filter-top p {
+	font-size: 13px;
+	color: var(--text-light);
+	margin: 0;
+}
+
+.dashboard-filter-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 12px;
+}
+
+.dashboard-filter-grid .form-group {
+	margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+	.dashboard-filter-top {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+}
