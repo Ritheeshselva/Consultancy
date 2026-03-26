@@ -1,10 +1,40 @@
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes slideGradient {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 .navbar {
-  background: #000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(120deg, var(--color-dark) 0%, var(--color-dark-soft) 100%);
   padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  position: relative;
+  z-index: 10000;
+  animation: glowPulse 3s ease-in-out infinite;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), inset 0 -2px 6px rgba(255, 255, 255, 0.06);
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-border-strong), transparent);
+  background-size: 200% 100%;
+  animation: slideGradient 3s ease-in-out infinite;
 }
 
 .navbar-container {
@@ -18,7 +48,7 @@
 }
 
 .navbar-logo {
-  color: white;
+  color: #f9fbff;
   text-decoration: none;
   font-size: 1.5rem;
   font-weight: bold;
@@ -61,7 +91,7 @@
 }
 
 .navbar-menu li a {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(249, 251, 255, 0.86);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -79,7 +109,7 @@
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: white;
+  background: var(--color-border-strong);
   transition: width 0.3s ease;
 }
 
@@ -90,8 +120,8 @@
 
 .navbar-menu li a:hover,
 .navbar-menu li a.active {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 @media (max-width: 768px) {

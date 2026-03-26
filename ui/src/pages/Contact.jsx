@@ -3,13 +3,6 @@ import './Contact.css';
 
 function Contact() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
 
   const images = [
     '/img/img1.jpg',
@@ -24,25 +17,6 @@ function Contact() {
 
     return () => clearInterval(interval);
   }, [images.length]);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert('Thank you! Our team will contact you shortly.');
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
-  };
 
   return (
     <div className="contact">
@@ -67,7 +41,7 @@ function Contact() {
             <div className="info-item">
               <div>
                 <h4>Phone</h4>
-                <p>+91 98765 43210</p>
+                <p>9526 62809</p>
               </div>
             </div>
 
@@ -81,7 +55,7 @@ function Contact() {
             <div className="info-item">
               <div>
                 <h4>Address</h4>
-                <p>Selvam Electricals and Motors, Main Road, Tamil Nadu</p>
+                <p>500, Kumaramangalam, Junction, Tiruchengode (TK), Namakkal (DI)-637205.</p>
               </div>
             </div>
 
@@ -92,86 +66,6 @@ function Contact() {
               </div>
             </div>
 
-            <div className="social-links">
-              <h4>Follow Us</h4>
-              <div className="social-icons">
-                <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Facebook">📘</a>
-                <a href="https://www.instagram.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Instagram">📷</a>
-                <a href="https://www.youtube.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="YouTube">▶️</a>
-                <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="social-icon" aria-label="WhatsApp">💬</a>
-              </div>
-            </div>
-          </div>
-
-          <div className="contact-form-wrapper">
-            <h2>Send an Enquiry</h2>
-            <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="name">Full Name *</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email Address *</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your email"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your mobile number"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="subject">Subject *</label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  placeholder="Product enquiry / service request"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="message">Message *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows="5"
-                  placeholder="Share your requirement with quantity, model, or capacity"
-                ></textarea>
-              </div>
-
-              <button type="submit" className="btn-submit">Send Message</button>
-            </form>
           </div>
         </div>
       </div>
@@ -179,13 +73,23 @@ function Contact() {
       <section className="map-section">
         <div className="container">
           <h2>Visit Our Store</h2>
-          <div className="map-placeholder">
+          <a
+            className="map-link"
+            href="https://www.google.com/maps/search/500,+Kumaramangalam,+Junction,+Tiruchengode+(TK),+Namakkal+(DI)-637205./@11.367968,77.9284819,17z/data=!3m1!4b1?entry=ttu&g_ep=EgoyMDI2MDMyMy4xIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="map-placeholder">
             <div className="map-content">
-              <h3>Selvam Electricals and Motors</h3>
-              <p>Main Road, Tamil Nadu</p>
-              <p className="map-note">Google Maps integration can be added here.</p>
+                <img
+                  src="/img/map.png"
+                  alt="Store location map"
+                  className="map-preview-image"
+                  loading="lazy"
+                />
             </div>
-          </div>
+            </div>
+          </a>
         </div>
       </section>
     </div>

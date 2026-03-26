@@ -1,23 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { productCategories } from '../data/productCatalog';
 import './Products.css';
 
 function Products() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
   const images = [
     '/img/img1.jpg',
     '/img/img2.jpg',
     '/img/images3.jpg'
-  ];
-
-  const products = [
-    { id: 1, name: 'Openwell Submersible Pump', category: 'AGRICULTURE PUMPS', price: 'From ₹18,500', image: '/img/p1.png', specs: ['Single/Three Phase', 'High Head Performance', 'Copper Winding'] },
-    { id: 2, name: 'Domestic Pressure Booster', category: 'RESIDENTIAL PUMPS', price: 'From ₹7,900', image: '/img/p2.png', specs: ['Auto Pressure Control', 'Low Noise Operation', 'Compact Design'] },
-    { id: 3, name: 'FRLS House Wire', category: 'WIRES & CABLES', price: 'From ₹1,450/coil', image: '/img/p3.png', specs: ['Flame Retardant', '99.97% Copper', 'Multi Strand Flexibility'] },
-    { id: 4, name: 'PVC Insulated Cable', category: 'WIRES & CABLES', price: 'From ₹3,200/roll', image: '/img/p4.png', specs: ['Heavy Duty Sheath', 'Heat Resistant', 'Long Service Life'] },
-    { id: 5, name: 'UPVC Plumbing Pipe', category: 'PIPES', price: 'From ₹280/length', image: '/img/p5.png', specs: ['Corrosion Resistant', 'High Flow Capacity', 'Leak Safe Joints'] },
-    { id: 6, name: 'CPVC Hot Water Pipe', category: 'PIPES', price: 'From ₹390/length', image: '/img/p6.png', specs: ['Suitable For Hot Water', 'Pressure Grade Pipe', 'Easy Installation'] },
-    { id: 7, name: 'Brass Ball Valve', category: 'VALVES', price: 'From ₹420', image: '/img/p7.png', specs: ['Quarter Turn Operation', 'Leak Tight Seal', 'Long Cycle Life'] },
-    { id: 8, name: 'Solar Submersible Pump Set', category: 'SOLAR PUMPS', price: 'From ₹68,000', image: '/img/p8.png', specs: ['DC Motor Technology', 'Works In Low Sunlight', 'Ideal For Borewell Use'] }
   ];
 
   useEffect(() => {
@@ -27,6 +19,10 @@ function Products() {
 
     return () => clearInterval(interval);
   }, [images.length]);
+
+  const navigateToCategory = (categoryKey) => {
+    navigate(`/products/${categoryKey}`);
+  };
 
   return (
     <div className="products">
@@ -43,9 +39,34 @@ function Products() {
       </section>
 
       <div className="container">
+        <nav className="product-subnav" aria-label="Product categories">
+          {productCategories.map((product) => (
+            <button
+              key={product.id}
+              type="button"
+              className="product-subnav-link"
+              onClick={() => navigateToCategory(product.key)}
+            >
+              {product.name}
+            </button>
+          ))}
+        </nav>
+
         <div className="products-grid">
-          {products.map(product => (
-            <div key={product.id} className="product-card">
+          {productCategories.map(product => (
+            <div
+              key={product.id}
+              className="product-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigateToCategory(product.key)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  navigateToCategory(product.key);
+                }
+              }}
+            >
               <div className="product-image-wrap">
                 <img
                   src={product.image}
@@ -55,16 +76,17 @@ function Products() {
                 />
               </div>
               <div className="product-content">
-                <span className="product-category">{product.category}</span>
                 <h3>{product.name}</h3>
-                <div className="product-specs">
-                  {product.specs.map((spec, index) => (
-                    <span key={index} className="spec-badge">{spec}</span>
-                  ))}
-                </div>
                 <div className="product-footer">
-                  <span className="product-price">{product.price}</span>
-                  <button className="btn-enquiry">Enquire Now</button>
+                  <button
+                    className="btn-enquiry"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      navigateToCategory(product.key);
+                    }}
+                  >
+                    Enquire
+                  </button>
                 </div>
               </div>
             </div>

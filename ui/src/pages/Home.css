@@ -3,13 +3,15 @@
 }
 
 .hero {
-  background: #000;
-  color: white;
-  padding: 10rem 2rem;
+  background: linear-gradient(120deg, var(--color-dark) 0%, var(--color-dark-soft) 100%);
+  color: #f6f8fc;
+  padding: 6rem 2rem 10rem 2rem;
   text-align: center;
   position: relative;
   overflow: hidden;
   min-height: 600px;
+  margin-top: 0;
+  border-top: none;
 }
 
 .image-slider {
@@ -30,7 +32,7 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #000;
+  background-color: var(--color-dark);
   opacity: 0;
   transition: opacity 1s ease-in-out;
 }
@@ -80,8 +82,8 @@
 }
 
 .btn-primary {
-  background: #fff;
-  color: #000;
+  background: var(--color-surface);
+  color: var(--color-dark);
 }
 
 .btn-primary:hover {
@@ -91,19 +93,19 @@
 
 .btn-secondary {
   background: transparent;
-  color: white;
-  border: 2px solid white;
+  color: #f6f8fc;
+  border: 2px solid #c6ccd6;
 }
 
 .btn-secondary:hover {
-  background: white;
-  color: #000;
+  background: #f6f8fc;
+  color: var(--color-dark);
   transform: translateY(-2px);
 }
 
 .btn-light {
-  background: white;
-  color: #1e3c72;
+  background: var(--color-surface);
+  color: var(--color-dark);
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
 }
@@ -122,7 +124,7 @@
 
 .features {
   padding: 5rem 2rem;
-  background: #f5f5f5;
+  background: var(--color-surface-soft);
 }
 
 .container {
@@ -134,7 +136,7 @@
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 3rem;
-  color: #000;
+  color: var(--color-dark);
 }
 
 .features-grid {
@@ -150,12 +152,13 @@
 }
 
 .feature-card {
-  background: white;
+  background: var(--color-surface);
   padding: 1rem;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .feature-image {
@@ -169,23 +172,23 @@
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-medium);
 }
 
 .feature-card h3 {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: #000;
+  color: var(--color-dark);
 }
 
 .feature-card p {
-  color: #666;
+  color: var(--color-muted);
   line-height: 1.6;
 }
 
 .cta {
-  background: #000;
-  color: white;
+  background: linear-gradient(120deg, var(--color-dark) 0%, var(--color-dark-soft) 100%);
+  color: #f6f8fc;
   padding: 5rem 2rem;
   text-align: center;
 }

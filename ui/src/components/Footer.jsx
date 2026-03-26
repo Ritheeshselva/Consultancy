@@ -10,14 +10,14 @@ function Footer() {
         </div>
         <div className="footer-section">
           <h4>Info</h4>
-          <p>📞 +91 98765 43210</p>
+          <p>📞 9526 62809</p>
           <p>
             📧{' '}
             <a className="footer-contact-link" href="mailto:info@selvammotors.com">
               info@selvammotors.com
             </a>
           </p>
-          <p>📍 Selvam Electricals, Main Road, Tamil Nadu</p>
+          <p>📍 500, Kumaramangalam, Junction, Tiruchengode (TK), Namakkal (DI)-637205.</p>
         </div>
         <div className="footer-section">
           <h4>Hours</h4>

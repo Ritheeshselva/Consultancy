@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AboutUs.css';
 
 function AboutUs() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
   const images = [
     '/img/img1.jpg',
     '/img/img2.jpg',
@@ -58,7 +60,19 @@ function AboutUs() {
                   </li>
                 ))}
               </ul>
-              <button className="btn-about-us">Get Details</button>
+              <button
+                className="btn-about-us"
+                onClick={() =>
+                  navigate('/contact', {
+                    state: {
+                      subject: service.title,
+                      message: `I need more details about ${service.title}.`
+                    }
+                  })
+                }
+              >
+                Get Details
+              </button>
             </div>
           ))}
         </div>

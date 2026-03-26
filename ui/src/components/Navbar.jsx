@@ -18,7 +18,7 @@ function Navbar() {
             </Link>
           </li>
           <li>
-            <Link to="/products" className={location.pathname === '/products' ? 'active' : ''}>
+            <Link to="/products" className={location.pathname.startsWith('/products') ? 'active' : ''}>
               Products
             </Link>
           </li>
