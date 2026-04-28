@@ -1,4 +1,5 @@
 import cors from "cors";
+import fs from "fs";
 import dotenv from "dotenv";
 import express from "express";
 import http from "http";
@@ -11,6 +12,7 @@ import invoiceRoutes from "./routes/invoiceRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import authenticateToken from "./middleware/auth.js";
+import { seedInitialProducts } from "./scripts/runSeed.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +21,8 @@ dotenv.config({ path: path.resolve(__dirname, "../.env"), override: true });
 const app = express();
 const port = process.env.PORT || 5000;
 const configuredClientOrigin = process.env.CLIENT_URL;
+const sameOrigin = `http://localhost:${port}`;
+const clientBuildPath = path.resolve(__dirname, "../public");
 
 app.use(
   cors({
@@ -28,11 +32,12 @@ app.use(
       }
 
       const isConfiguredOrigin = configuredClientOrigin && origin === configuredClientOrigin;
+      const isSameOrigin = origin === sameOrigin;
       const isLocalDevOrigin =
         /^http:\/\/localhost:\d+$/.test(origin) ||
         /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
 
-      if (isConfiguredOrigin || isLocalDevOrigin) {
+      if (isConfiguredOrigin || isSameOrigin || isLocalDevOrigin) {
         return callback(null, true);
       }
 
@@ -54,6 +59,14 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
+if (fs.existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+
+  app.get(/^\/(?!api).*/, (_req, res) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
+
 app.use((_req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -69,6 +82,7 @@ app.use((error, _req, res, _next) => {
 const startServer = async () => {
   try {
     await connectDB();
+    await seedInitialProducts();
     const server = http.createServer(app);
 
     server.on("error", (error) => {

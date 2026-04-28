@@ -1,0 +1,31 @@
+# Dependencies
+**/node_modules
+
+# Build outputs
+**/dist
+**/build
+
+# Logs
+**/*.log
+**/logs
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Temporary and editor files
+**/.DS_Store
+**/Thumbs.db
+**/*.tmp
+**/*.temp
+**/*.swp
+**/.vscode
+**/.idea
+
+# Git metadata
+.git
+.gitignore
+
+# Optional local caches
+**/.cache
