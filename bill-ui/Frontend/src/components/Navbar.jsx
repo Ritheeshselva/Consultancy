@@ -4,7 +4,7 @@ function Navbar({ currentPage, setCurrentPage, userName, userRole, onLogout }) {
   const isAdmin = userRole === 'admin'
   const menuItems = [
     ...(isAdmin ? [{ id: 'dashboard', label: '📊 Dashboard' }] : []),
-    { id: 'invoice', label: '📄 New Invoice' },
+    { id: 'invoice', label: '📄 New Invoices' },
     { id: 'history', label: '📋 Invoice History' },
     { id: 'products', label: '🛠️ Products' },
     { id: 'customers', label: '👥 Customers' },
